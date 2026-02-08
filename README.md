@@ -17,5 +17,5 @@ This project performs a differential expression analysis comparing Primary Solid
 
 ## Visuals
 ![ggplot Volcano Plot](Volcano_Plot_BRCA.png)
-![Enhanced Volcano Plot](Enhanced_volcano_plot_TCGA-BRCA.png)
+![Enhanced Volcano Plot](Enhanced_volcano_Rplot.png)
 ![Heatmap](TCGA_BRCA_Heatmap.png)
