@@ -16,5 +16,6 @@ This project performs a differential expression analysis comparing Primary Solid
 - **Visualizations:** The Volcano plot shows distinct transcriptomic signatures with high significance (p < 0.05).
 
 ## Visuals
-![Volcano Plot](Volcano_Plot_BRCA.png)
+![ggplot Volcano Plot](Volcano_Plot_BRCA.png)
+![Enhanced Volcano Plot](Enhanced_volcano_plot_TCGA-BRCA.png)
 ![Heatmap](TCGA_BRCA_Heatmap.png)
