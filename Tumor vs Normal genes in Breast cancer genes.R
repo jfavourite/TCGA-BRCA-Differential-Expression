@@ -131,16 +131,12 @@ head(resLFC[order(resLFC$padj), ])
 
 #Making a volcanoe plot
 
-# 1. Get all names from the original object
 all_names <- rowData(brca_se)$gene_name
 
-# 2. Make sure the names are 'named' with their ENSG IDs so R can match them
 names(all_names) <- rownames(brca_se)
 
-# 3. Filter those names to match only the genes in your results
 matched_labels <- all_names[rownames(resLFC)]
 
-# 4. Now running EnhancedVolcano with the matched labels
 EnhancedVolcano(
   resLFC,
   lab = matched_labels, # Use the matched labels here!
@@ -172,40 +168,58 @@ ggplot(res_df, aes(x = log2FoldChange, y = -log10(padj))) +
 #Selecting the high confidence genes
 
 res_df <- as.data.frame(resLFC)
-res_ordered <- res_df[order(res_df$padj), ]
 
+res_df$Symbol <- all_names[rownames(res_df)]
 
-res_ordered$Symbol <- all_names[rownames(res_ordered)]
+res_df <- res_df[!is.na(res_df$padj), ]
 
-# View the Top 10 most significant genes
-head(res_ordered, 10)
+res_filtered <- res_df[
+  res_df$padj < 0.05 & abs(res_df$log2FoldChange) > 1,
+]
 
-View(res_ordered)
-#Save the table as a CSV for Excel
-write.csv(res_ordered, "TCGA_BRCA_Top_Genes.csv")
+#Ranking by biological strength (absolute log2FC)
+res_filtered$absLFC <- abs(res_filtered$log2FoldChange)
 
+res_ranked <- res_filtered[
+  order(-res_filtered$absLFC),
+]
 
-#Creating an heatmap for the top 20 genes
-top_genes <- rownames(res_ordered)[1:20]
+# Saving the table in .csv
 
-vsd <- vst(dds, blind=FALSE)
+write.csv(
+  res_ranked,
+  file = "TCGA_BRCA_HighConfidence_DEGs.csv",
+  row.names = TRUE
+)
+
+# Creating a heatmap for the top genes
+# choosing the top 20 genes
+top_genes <- rownames(res_ranked)[1:20]
+vsd <- vst(dds, blind = FALSE)
+#Preparing heatmmap matrix
 heatmap_matrix <- assay(vsd)[top_genes, ]
 
-rownames(heatmap_matrix) <- res_ordered$Symbol[1:20]
+# Replacing ENSG IDs with gene symbols
+rownames(heatmap_matrix) <- res_ranked$Symbol[1:20]
 
-annotation_data <- as.data.frame(colData(dds)[, c("group")])
-colnames(annotation_data) <- "Status"
+annotation_data <- data.frame(
+  Status = colData(dds)$group
+)
+
 rownames(annotation_data) <- colnames(heatmap_matrix)
 
-pheatmap(heatmap_matrix, 
-         annotation_col = annotation_data, 
-         show_colnames = FALSE,         
-         scale = "row",                 
-         clustering_distance_rows = "euclidean", 
-         main = "Top 20 Differentially Expressed Genes in TCGA-BRCA",
-         color = colorRampPalette(c("blue", "white", "red"))(100),
-         filename = "TCGA_BRCA_Heatmap.png", 
-         width = 8, height = 10)
-
+pheatmap(
+  heatmap_matrix,
+  annotation_col = annotation_data,
+  show_colnames = FALSE,
+  scale = "row",
+  clustering_distance_rows = "euclidean",
+  clustering_distance_cols = "euclidean",
+  main = "Top 20 High-Confidence Differentially Expressed Genes in TCGA-BRCA",
+  color = colorRampPalette(c("blue", "white", "red"))(100),
+  filename = "TCGA_BRCA_HighConfidence_Heatmap.png",
+  width = 8,
+  height = 10
+)
 
 
