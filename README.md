@@ -11,6 +11,17 @@ The goal is to identify high-confidence genes that distinguish tumor from normal
 tissue and provide a foundation for downstream subtype-specific and drug discovery
 analyses.
 
+## Tools & Packages
+- R (v4.5.2)
+- TCGAbiolinks
+- DESeq2
+- pheatmap
+- ggplot2
+- org.Hs.eg.db
+- apeglm
+- Enhancedvolcano
+- summarized experiment
+
 ## Dataset
 - **Source:** TCGA (The Cancer Genome Atlas)
 - **Project:** TCGA-BRCA
@@ -53,25 +64,29 @@ using the `TCGAbiolinks` R package.
 - Downregulated genes reflect loss of normal tissue-specific functions
 - Results confirm strong biological signal and dataset quality
 
-## Tools & Packages
-- R (v4.5.2)
-- TCGAbiolinks
-- DESeq2
-- pheatmap
-- ggplot2
-- org.Hs.eg.db
-- apeglm
-- Enhancedvolcano
-- summarized experiment
+## Functional Enrichment
 
+### GO Biological Process Enrichment
 
-## Next Steps
-This project serves as a foundation project in a larger pipeline.
-Future work includes:
-- Triple-Negative Breast Cancer (TNBC)–specific analysis
-- Functional enrichment (GO/KEGG)
-- Structure-based drug discovery and molecular docking
-- 
+- Gene ID conversion: Ensembl → Entrez
+- Enrichment performed using `clusterProfiler::enrichGO`
+- Multiple testing correction: Benjamini-Hochberg
+- Results and plots are stored in "results" folder
+
+### GSEA (Gene Set Enrichment Analysis)
+
+- Ranked gene list based on shrunken log2FoldChange
+- Duplicate Entrez IDs handled via aggregation
+- Tiny noise added to break ranking ties
+- GSEA performed using `clusterProfiler::gseGO`
+- Results and plots are stored in "results" folder
+
+## Reproducibility
+
+- R version and package versions stored in `sessionInfo.txt`
+- Random seed set for reproducibility
+- No raw TCGA data stored in repository (downloaded via TCGAbiolinks)
+
 ## Author
 **Imhanbor Joseph Osemudiamen**  
 Research assistant at the Lagos State University Genomics and Drug Discovery Lab (LASU), Nigeria.  
